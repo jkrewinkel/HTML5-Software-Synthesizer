@@ -73,6 +73,8 @@ h1,h2,h3,h4,h5{
       margin: 0;
       position: relative;
       padding: 0;
+      overflow: auto;
+      padding-bottom: 5px;
 
       li {
         width: 72px;
@@ -84,6 +86,7 @@ h1,h2,h3,h4,h5{
         position: relative;
         background-color: white;
         border-top: 0;
+        float: left;
 
         span {
           position: absolute;

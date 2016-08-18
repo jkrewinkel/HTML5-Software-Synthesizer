@@ -329,6 +329,8 @@ h1, h2, h3, h4, h5 {
   margin: 0;
   position: relative;
   padding: 0;
+  overflow: auto;
+  padding-bottom: 5px;
 }
 
 #container #input ul#keyboard li {
@@ -341,6 +343,7 @@ h1, h2, h3, h4, h5 {
   position: relative;
   background-color: white;
   border-top: 0;
+  float: left;
 }
 
 #container #input ul#keyboard li span {
