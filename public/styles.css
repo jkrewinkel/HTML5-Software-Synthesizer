@@ -1,0 +1,477 @@
+@font-face {
+  font-family: 'icomoon';
+  src: url("fonts/icomoon.eot?qr137b");
+  src: url("fonts/icomoon.eot?qr137b#iefix") format("embedded-opentype"), url("fonts/icomoon.ttf?qr137b") format("truetype"), url("fonts/icomoon.woff?qr137b") format("woff"), url("fonts/icomoon.svg?qr137b#icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-times:before {
+  content: "\e900";
+}
+
+.icon-tick:before {
+  content: "\e901";
+}
+
+.icon-plus:before {
+  content: "\e902";
+}
+
+.icon-minus:before {
+  content: "\e903";
+}
+
+.icon-chevron-right:before {
+  content: "\e904";
+}
+
+.icon-chevron-left:before {
+  content: "\e905";
+}
+
+.icon-arrow-right-thick:before {
+  content: "\e906";
+}
+
+.icon-arrow-left-thick:before {
+  content: "\e907";
+}
+
+.icon-th-menu:before {
+  content: "\e908";
+}
+
+.icon-th-list:before {
+  content: "\e909";
+}
+
+.icon-arrow-forward:before {
+  content: "\e90a";
+}
+
+.icon-arrow-back:before {
+  content: "\e90b";
+}
+
+.icon-star:before {
+  content: "\e90c";
+}
+
+.icon-media-pause:before {
+  content: "\e90d";
+}
+
+.icon-infinity:before {
+  content: "\e90e";
+}
+
+.icon-cog:before {
+  content: "\e90f";
+}
+
+.icon-refresh:before {
+  content: "\e910";
+}
+
+.icon-info-large:before {
+  content: "\e911";
+}
+
+.icon-arrow-shuffle:before {
+  content: "\e912";
+}
+
+.icon-arrow-loop:before {
+  content: "\e913";
+}
+
+.icon-power:before {
+  content: "\e914";
+}
+
+.icon-microphone:before {
+  content: "\e915";
+}
+
+.icon-media-stop:before {
+  content: "\e916";
+}
+
+.icon-media-record:before {
+  content: "\e917";
+}
+
+.icon-media-play:before {
+  content: "\e918";
+}
+
+.icon-media-fast-forward:before {
+  content: "\e919";
+}
+
+.icon-media-eject:before {
+  content: "\e91a";
+}
+
+.icon-sound:before {
+  content: "\e91b";
+}
+
+.icon-microphone2:before {
+  content: "\e91c";
+}
+
+.icon-cross:before {
+  content: "\e91d";
+}
+
+.icon-plus2:before {
+  content: "\e91e";
+}
+
+.icon-left:before {
+  content: "\e91f";
+}
+
+.icon-up:before {
+  content: "\e920";
+}
+
+.icon-play:before {
+  content: "\e921";
+}
+
+.icon-fast-forward:before {
+  content: "\e922";
+}
+
+.icon-next2:before {
+  content: "\e923";
+}
+
+.icon-refresh2:before {
+  content: "\e924";
+}
+
+.icon-headphones:before {
+  content: "\e925";
+}
+
+.icon-undo:before {
+  content: "\e965";
+}
+
+.icon-redo:before {
+  content: "\e966";
+}
+
+.icon-search:before {
+  content: "\e986";
+}
+
+.icon-zoom-in:before {
+  content: "\e987";
+}
+
+.icon-zoom-out:before {
+  content: "\e988";
+}
+
+.icon-info:before {
+  content: "\ea0c";
+}
+
+.icon-play2:before {
+  content: "\ea15";
+}
+
+.icon-pause:before {
+  content: "\ea16";
+}
+
+.icon-stop:before {
+  content: "\ea17";
+}
+
+.icon-previous:before {
+  content: "\ea18";
+}
+
+.icon-next:before {
+  content: "\ea19";
+}
+
+.icon-backward:before {
+  content: "\ea1a";
+}
+
+.icon-forward2:before {
+  content: "\ea1b";
+}
+
+.icon-volume-high:before {
+  content: "\ea26";
+}
+
+.icon-volume-medium:before {
+  content: "\ea27";
+}
+
+.icon-volume-low:before {
+  content: "\ea28";
+}
+
+.icon-volume-mute:before {
+  content: "\ea29";
+}
+
+.icon-volume-mute2:before {
+  content: "\ea2a";
+}
+
+.icon-volume-increase:before {
+  content: "\ea2b";
+}
+
+.icon-volume-decrease:before {
+  content: "\ea2c";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Raleway', sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+#container {
+  margin: 0px auto;
+  max-width: 1020px;
+  padding-top: 60px;
+}
+
+#container h1 {
+  font-weight: 600;
+  font-size: 2.8em;
+  margin-bottom: 15px;
+  color: #212d4a;
+}
+
+#container h2 {
+  font-weight: 500;
+  margin-top: 0px;
+  font-size: 1.8em;
+  color: #a3acbd;
+}
+
+#container p {
+  margin-bottom: 60px;
+  font-size: 1.2em;
+  margin-top: 30px;
+  line-height: 1.8em;
+  color: #555e73;
+}
+
+#container p a {
+  color: #ed3e76;
+  text-decoration: none;
+  border-bottom: 1px solid #ed3e76;
+  padding-bottom: 3px;
+  transition: color 0.2s;
+}
+
+#container p a:hover {
+  color: #f87ca3;
+  border-color: #f87ca3;
+  transition: color 0.2s;
+}
+
+#container p a:active {
+  color: #ffccdc;
+  border-color: #ffccdc;
+  transition: color 0.2s;
+}
+
+#container #input {
+  padding: 0px 2px 10px;
+  width: 1012px;
+  background-color: #728bc6;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  position: relative;
+  margin-top: 60px;
+}
+
+#container #input ul#keyboard {
+  list-style: none;
+  margin: 0;
+  position: relative;
+  padding: 0;
+}
+
+#container #input ul#keyboard li {
+  width: 72px;
+  height: 250px;
+  display: inline-block;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0px 5px 0px 0px rgba(1, 1, 2, 0.3), inset 0 -6px 0px 1px rgba(153, 156, 180, 0.42);
+  z-index: 1;
+  position: relative;
+  background-color: white;
+  border-top: 0;
+}
+
+#container #input ul#keyboard li span {
+  position: absolute;
+  bottom: 25px;
+  font-weight: 600;
+  font-size: 0.8em;
+  width: 30px;
+  margin: 0px auto;
+  left: 0px;
+  right: 0px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #3a394e;
+}
+
+#container #input ul#keyboard li span::selection {
+  color: #3a394e;
+  background: none;
+}
+
+#container #input ul#keyboard li span::-moz-selection {
+  color: #3a394e;
+  background: none;
+}
+
+#container #input ul#keyboard li:hover {
+  border: 1px solid #ff0048;
+  cursor: pointer;
+  background-color: #f5e2e7;
+  box-shadow: 0px 5px 0px 0px rgba(213, 44, 92, 0.62), inset 0 -6px 0px 1px rgba(255, 145, 195, 0.4);
+}
+
+#container #input ul#keyboard li:hover span {
+  bottom: 24px;
+}
+
+#container #input ul#keyboard li:active {
+  background: linear-gradient(#f9f9f9, #d4d4d4, #c0bcce);
+  box-shadow: inset 0 -2px 3px rgba(47, 43, 83, 0.46);
+  border: 1px solid #68687a;
+  border-top: none;
+}
+
+#container #input ul#keyboard li[data-key$="#"] {
+  width: 48px;
+  margin-left: -24px;
+  margin-right: -24px;
+  height: 150px;
+  vertical-align: top;
+  background: #161b27;
+  z-index: 2;
+  box-shadow: 0 4px 0px 0px #37384d;
+}
+
+#container #input ul#keyboard li[data-key$="#"] span {
+  color: white;
+  bottom: 15px;
+}
+
+#container #input ul#keyboard li[data-key$="#"] span::selection {
+  color: white;
+}
+
+#container #input ul#keyboard li[data-key$="#"] span::-moz-selection {
+  color: white;
+}
+
+#container #input ul#keyboard li[data-key$="#"]:hover {
+  background-color: #593747;
+  box-shadow: 0px 5px 0px 0px #781934;
+}
+
+#container #input ul#keyboard li[data-key$="#"]:hover span {
+  bottom: 14px;
+}
+
+#container #input ul#keyboard li[data-key$="#"]:active {
+  background: linear-gradient(#161b27, #090B0F);
+  box-shadow: 0 3px black, inset 0 -3px 5px #030408;
+  border: 1px solid black;
+}
+
+#container #input .shadow {
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  height: 7px;
+  background-color: rgba(104, 15, 43, 0.11);
+  display: block;
+  top: 0px;
+  left: 0;
+}
+
+#container #input #octave-ctrl {
+  padding: 10px 5px 8px 15px;
+  color: #e8e2ff;
+  font-size: 0.7em;
+  background-color: rgba(218, 233, 255, 0.18);
+  border-radius: 3px;
+  display: inline-block;
+  margin: 7px 5px 0px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+#container #input #octave-ctrl i {
+  background-color: rgba(11, 11, 11, 0.14);
+  border-radius: 2px;
+  font-size: 1.05em;
+  padding: 5px;
+}
+
+#container #input #octave-ctrl i:nth-of-type(1) {
+  margin-left: 5px;
+}
+
+#container #input #octave-ctrl i:hover {
+  cursor: pointer;
+  background-color: #5b6992;
+}
+
+#container #input #octave-ctrl i:active {
+  background-color: #555775;
+}
+
+#container #input #octave-ctrl i.active {
+  background: rgba(81, 81, 81, 0.11) none repeat scroll 0% 0%;
+  color: #a9a7ff;
+}
+
+#container #input #octave-ctrl i.active:hover {
+  cursor: not-allowed;
+}
