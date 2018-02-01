@@ -5,6 +5,7 @@ const buffer = require("vinyl-buffer");
 const browserify = require("browserify");
 const watchify = require("watchify");
 const babel = require("babelify");
+const sass = require("gulp-sass");
 
 function compile(watch){
     let bundler = watchify(browserify('./src/main.js', { debug : true }).transform(babel));
@@ -36,4 +37,13 @@ function watch(){
 gulp.task('build', function(){ return compile(); });
 gulp.task('watch', function(){ return watch(); });
 
-gulp.task('default', ['watch']);
+gulp.task('styles', function(){
+    gulp.src('public/**/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('public'))
+});
+gulp.task('watchStyles', function(){
+    gulp.watch('public/**/*.scss',['styles']);
+});
+
+gulp.task('default', ['watch', 'watchStyles']);

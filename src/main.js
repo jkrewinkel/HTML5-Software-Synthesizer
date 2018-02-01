@@ -5,6 +5,7 @@ import Synth from './synth.js';
 // Instantiate the Synth
 // And link the audio context container
 const synth = new Synth(new ( window.AudioContext || window.webkitAudioContext )());
+synth.setupUI();
 
 /*
     Getting the note frequencies:
@@ -33,9 +34,9 @@ for (let i = 0; i < items.length; ++i) {
 // On Mouseup we will stop all oscillators, I'm putting this on document.body
 // instead of on the list elements because the user can hold down the key while
 // still moving the mouse, which messes it all up
-document.body.onmouseup = function(){
-   synth.stop();
-};
+document.addEventListener('mouseup', function(){
+    synth.stop();
+});
 
 /*
  Shifting the keyboard to the left or right using the octave controls

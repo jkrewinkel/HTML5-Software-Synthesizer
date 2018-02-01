@@ -1,0 +1,51 @@
+.knob-container {
+  position:relative;
+  width: 56px;
+  height: 56px;
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg{
+    position:absolute;
+    top: -2px;
+    left: -2px;
+    -webkit-transform: rotate(150deg);
+    -moz-transform: rotate(150deg);
+    -ms-transform: rotate(150deg);
+    -o-transform: rotate(150deg);
+    transform: rotate(150deg);
+    pointer-events:none;
+  }
+
+  .knob {
+    background-color: #ddd;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    overflow: visible;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+
+    &::-moz-focus-inner {
+      // removes padding in Firefox
+      border: none;
+      padding: 0;
+    }
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      height: 3px;
+      width: 3px;
+      background-color: black;
+      border-radius: 10px;
+      top: 5px;
+      left: calc(50% - 1px);
+    }
+  }
+}

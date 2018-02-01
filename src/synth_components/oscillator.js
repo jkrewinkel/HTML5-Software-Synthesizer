@@ -12,7 +12,11 @@ class Oscillator{
         this.oscillator.start();
     }
     stop(){
-        this.oscillator.stop();
+        if(this.oscillator !== undefined )
+            this.oscillator.stop();
+    }
+    set gainComponent(component){
+        this.gainControl = component;
     }
 }
 

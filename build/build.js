@@ -10,6 +10,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Instantiate the Synth
 // And link the audio context container
 var synth = new _synth2.default(new (window.AudioContext || window.webkitAudioContext)());
+synth.setupUI();
 
 /*
     Getting the note frequencies:
@@ -37,9 +38,9 @@ for (var i = 0; i < items.length; ++i) {
 // On Mouseup we will stop all oscillators, I'm putting this on document.body
 // instead of on the list elements because the user can hold down the key while
 // still moving the mouse, which messes it all up
-document.body.onmouseup = function () {
+document.addEventListener('mouseup', function () {
     synth.stop();
-};
+});
 
 /*
  Shifting the keyboard to the left or right using the octave controls
@@ -85,6 +86,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _UI = require("./ui_components/UI.js");
+
+var _UI2 = _interopRequireDefault(_UI);
+
 var _oscillator = require("./synth_components/oscillator");
 
 var _oscillator2 = _interopRequireDefault(_oscillator);
@@ -123,6 +128,11 @@ var Synth = function () {
             });
         }
     }, {
+        key: "setupUI",
+        value: function setupUI() {
+            this.UI = new _UI2.default(this);
+        }
+    }, {
         key: "Oscillators",
         get: function get() {
             return this.oscillators;
@@ -134,7 +144,7 @@ var Synth = function () {
 
 exports.default = Synth;
 
-},{"./synth_components/oscillator":3}],3:[function(require,module,exports){
+},{"./synth_components/oscillator":3,"./ui_components/UI.js":4}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -168,7 +178,12 @@ var Oscillator = function () {
     }, {
         key: "stop",
         value: function stop() {
-            this.oscillator.stop();
+            if (this.oscillator !== undefined) this.oscillator.stop();
+        }
+    }, {
+        key: "gainComponent",
+        set: function set(component) {
+            this.gainControl = component;
         }
     }]);
 
@@ -177,6 +192,202 @@ var Oscillator = function () {
 
 exports.default = Oscillator;
 
-},{}]},{},[1])
+},{}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _knob = require('./knob');
+
+var _knob2 = _interopRequireDefault(_knob);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UI = function () {
+    function UI(synth) {
+        _classCallCheck(this, UI);
+
+        this.synth = synth;
+
+        this.setupKnobs();
+
+        // Mouse up always disables any mousemove event handlers
+        document.addEventListener('mouseup', function () {
+            document.body.onmousemove = '';
+        }.bind(this));
+    }
+
+    _createClass(UI, [{
+        key: 'setupKnobs',
+        value: function setupKnobs() {
+
+            var knobElements = document.querySelectorAll('[data-component="knob"]');
+            knobElements.forEach(function (element) {
+                if (element.dataset.componentparent === 'osc[0]') this.synth.Oscillators[0].gainControl = new _knob2.default(element);
+            }.bind(this));
+        }
+    }]);
+
+    return UI;
+}();
+
+exports.default = UI;
+
+},{"./knob":6}],5:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UI_Component_Base = function UI_Component_Base(element) {
+    _classCallCheck(this, UI_Component_Base);
+
+    this.element = element;
+};
+
+exports.default = UI_Component_Base;
+
+},{}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+        value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = require('./base');
+
+var _base2 = _interopRequireDefault(_base);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Knob = function (_UI_Component_Base) {
+        _inherits(Knob, _UI_Component_Base);
+
+        function Knob(element) {
+                _classCallCheck(this, Knob);
+
+                var _this = _possibleConstructorReturn(this, (Knob.__proto__ || Object.getPrototypeOf(Knob)).call(this, element));
+
+                _this.element.dataset.value = '0';
+
+                _this.minVal = 0;
+                _this.maxVal = 250;
+                _this.value = 0;
+                _this.lastCursorPosition = 0;
+
+                _this.dial = _this.createDial();
+
+                _this.setStyle();
+
+                _this.element.onmousedown = function () {
+                        this.updateValue();
+                }.bind(_this);
+                return _this;
+        }
+
+        _createClass(Knob, [{
+                key: 'createDial',
+                value: function createDial() {
+
+                        var elementOffset = this.element.getBoundingClientRect();
+                        var dimension = elementOffset.width + 10;
+
+                        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        svg.setAttribute("width", dimension.toString());
+                        svg.setAttribute("height", dimension.toString());
+                        svg.setAttribute("viewBox", '0 0 ' + dimension.toString() + ' ' + dimension.toString());
+
+                        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        var radius = dimension / 2 - 4;
+                        circle.setAttribute('cx', (dimension / 2).toString());
+                        circle.setAttribute('cy', (dimension / 2).toString());
+                        circle.setAttribute('r', radius.toString());
+                        circle.setAttribute('fill', 'none');
+                        circle.setAttribute('stroke', 'black');
+                        circle.setAttribute('stroke-width', '1');
+
+                        var circumference = 2 * Math.PI * radius;
+                        //circle.setAttribute('data-endpoint', (circumference*0.33).toString() );
+
+                        circle.startPoint = circumference;
+                        circle.endPoint = circumference * 0.33;
+
+                        circumference = circumference.toString();
+                        //circle.setAttribute('data-startpoint', circumference);
+                        circle.setAttribute('stroke-dasharray', circumference + ' ' + circumference);
+                        circle.setAttribute('stroke-dashoffset', (radius * 0.33).toString());
+
+                        svg.appendChild(circle);
+                        this.element.parentNode.appendChild(svg);
+
+                        return circle;
+                }
+        }, {
+                key: 'setStyle',
+                value: function setStyle() {
+                        var val = this.value - this.maxVal / 2;
+                        val = "rotate(" + val + "deg)";
+                        this.element.style.transform = val;
+                        this.element.style.webkitTransform = val;
+                        this.element.style.MozTransform = val;
+                        this.element.style.msTransform = val;
+                        this.element.style.OTransform = val;
+
+                        // Get percentage of value
+                        var valPercentage = (this.value - this.minVal) * 100 / (this.maxVal - this.minVal);
+
+                        // Get dial value
+                        var dialVal = (this.dial.endPoint - this.dial.startPoint) * ((100 - valPercentage) / 100);
+
+                        // Set percentage of dial
+                        this.dial.setAttribute('stroke-dashoffset', (this.dial.endPoint - dialVal).toString());
+                }
+        }, {
+                key: 'updateValue',
+                value: function updateValue() {
+                        document.body.onmousemove = function (event) {
+
+                                var elementOffset = this.element.getBoundingClientRect();
+                                var elementCenter = elementOffset.top + elementOffset.height / 2;
+                                var cursorRelativeToCenter = (elementCenter - event.clientY) / 150;
+
+                                if (cursorRelativeToCenter > 0) {
+
+                                        if (this.lastCursorPosition < cursorRelativeToCenter && this.value < this.maxVal) this.value = this.value + cursorRelativeToCenter;else if (this.value > this.minVal) this.value = this.value - cursorRelativeToCenter;
+                                } else {
+
+                                        if (this.lastCursorPosition > cursorRelativeToCenter && this.value > this.minVal) this.value = this.value + cursorRelativeToCenter;else if (this.value < this.maxVal) this.value = this.value - cursorRelativeToCenter;
+                                }
+
+                                this.lastCursorPosition = cursorRelativeToCenter;
+
+                                this.setStyle();
+                        }.bind(this);
+                }
+        }]);
+
+        return Knob;
+}(_base2.default);
+
+exports.default = Knob;
+
+},{"./base":5}]},{},[1])
 
 //# sourceMappingURL=build.js.map

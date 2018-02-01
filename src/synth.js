@@ -1,3 +1,4 @@
+import UI from "./ui_components/UI.js";
 import Oscillator from "./synth_components/oscillator";
 
 class Synth{
@@ -5,7 +6,7 @@ class Synth{
         this.context = context;
         this.oscillators = [
             new Oscillator(context),
-            new Oscillator(context)
+            new Oscillator(context),
         ];
     }
 
@@ -29,6 +30,10 @@ class Synth{
         this.oscillators.forEach(function(osc){
            osc.stop();
         });
+    }
+
+    setupUI(){
+        this.UI = new UI(this);
     }
 }
 
