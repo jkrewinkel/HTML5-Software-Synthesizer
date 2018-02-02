@@ -145,7 +145,7 @@ var Synth = function () {
 exports.default = Synth;
 
 },{"./synth_components/oscillator":3,"./ui_components/UI.js":4}],3:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -163,27 +163,125 @@ var Oscillator = function () {
     }
 
     _createClass(Oscillator, [{
-        key: "setFrequency",
+        key: 'setFrequency',
         value: function setFrequency(halfStep) {
-            this.frequency = 440 * Math.pow(Math.pow(2, 1 / 12), halfStep);
+            this.frequency = 440 * Math.pow(Math.pow(2, 1 / 12), halfStep + this.pitchControl.value);
         }
     }, {
-        key: "start",
+        key: 'start',
         value: function start() {
-            this.oscillator = this.context.createOscillator();
-            this.oscillator.connect(this.context.destination);
-            this.oscillator.frequency.value = this.frequency;
-            this.oscillator.start();
+
+            this.oscillators = [];
+
+            // Create Oscillators depending on how many voices
+            for (var i = 0; i < this.voicesControl.value; i++) {
+
+                this.oscillators[i] = [];
+
+                // Create the gain node
+                this.oscillators[i]['gain'] = this.context.createGain();
+                this.oscillators[i]['gain'].connect(this.context.destination);
+                console.log(this.voicesControl.value);
+
+                this.oscillators[i]['gain'].gain.value = (this.gainControl.value - this.gainControl.minVal) * 100 / (this.gainControl.maxVal - this.gainControl.minVal) / 100 / this.voicesControl.value;
+
+                console.log(this.oscillators[i]['gain'].gain);
+                // Create the oscillator
+                this.oscillators[i]['osc'] = this.context.createOscillator();
+                this.oscillators[i]['osc'].connect(this.oscillators[i]['gain']);
+                this.oscillators[i]['osc'].frequency.value = this.frequency;
+                this.oscillators[i]['osc'].type = this.waveformControl.value;
+            }
+
+            // Detune depending on the detune control value
+            if (this.oscillators.length > 0) {
+                var detune = this.detuneControl.value / 15;
+                var oscBreadth = (this.voicesControl.value - 1) * detune;
+                this.oscillators.forEach(function (osc, index) {
+                    osc['osc'].frequency.value = this.frequency - oscBreadth / 2 + index * detune;
+                }.bind(this));
+            }
+
+            // Play the oscillators
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = this.oscillators[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var osc = _step.value;
+
+                    osc['osc'].start();
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
         }
     }, {
-        key: "stop",
+        key: 'stop',
         value: function stop() {
-            if (this.oscillator !== undefined) this.oscillator.stop();
+            if (this.oscillators !== undefined) {
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = this.oscillators[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var osc = _step2.value;
+
+                        osc['osc'].stop();
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+            }
         }
     }, {
-        key: "gainComponent",
+        key: 'detuneComponent',
+        set: function set(component) {
+            this.detuneControl = component;
+        }
+    }, {
+        key: 'gainComponent',
         set: function set(component) {
             this.gainControl = component;
+        }
+    }, {
+        key: 'pitchComponent',
+        set: function set(component) {
+            this.pitchControl = component;
+        }
+    }, {
+        key: 'voicesComponent',
+        set: function set(component) {
+            this.voicesControl = component;
+        }
+    }, {
+        key: 'waveformComponent',
+        set: function set(component) {
+            this.waveformControl = component;
         }
     }]);
 
@@ -205,6 +303,10 @@ var _knob = require('./knob');
 
 var _knob2 = _interopRequireDefault(_knob);
 
+var _dragInput = require('./dragInput');
+
+var _dragInput2 = _interopRequireDefault(_dragInput);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -216,6 +318,8 @@ var UI = function () {
         this.synth = synth;
 
         this.setupKnobs();
+        this.setupDragInput();
+        this.setupSelect();
 
         // Mouse up always disables any mousemove event handlers
         document.addEventListener('mouseup', function () {
@@ -226,10 +330,68 @@ var UI = function () {
     _createClass(UI, [{
         key: 'setupKnobs',
         value: function setupKnobs() {
-
             var knobElements = document.querySelectorAll('[data-component="knob"]');
             knobElements.forEach(function (element) {
-                if (element.dataset.componentparent === 'osc[0]') this.synth.Oscillators[0].gainControl = new _knob2.default(element);
+                if (element.dataset.componentparent === 'osc[0]') {
+                    switch (element.dataset.componentcontrol) {
+                        case 'level':
+                            this.synth.Oscillators[0].gainComponent = new _knob2.default(element);
+                            break;
+                        case 'detune':
+                            this.synth.Oscillators[0].detuneComponent = new _knob2.default(element);
+                            break;
+                    }
+                }
+                if (element.dataset.componentparent === 'osc[1]') {
+                    switch (element.dataset.componentcontrol) {
+                        case 'level':
+                            this.synth.Oscillators[1].gainComponent = new _knob2.default(element);
+                            break;
+                        case 'detune':
+                            this.synth.Oscillators[1].detuneComponent = new _knob2.default(element);
+                            break;
+                    }
+                }
+            }.bind(this));
+        }
+    }, {
+        key: 'setupDragInput',
+        value: function setupDragInput() {
+            var dragInputElements = document.querySelectorAll('[data-component="dragInput"]');
+            dragInputElements.forEach(function (element) {
+                if (element.dataset.componentparent === 'osc[0]') {
+                    switch (element.dataset.componentcontrol) {
+                        case 'pitch':
+                            this.synth.Oscillators[0].pitchComponent = new _dragInput2.default(element);
+                            break;
+                        case 'voices':
+                            this.synth.Oscillators[0].voicesComponent = new _dragInput2.default(element);
+                            break;
+                    }
+                }
+                if (element.dataset.componentparent === 'osc[1]') {
+                    switch (element.dataset.componentcontrol) {
+                        case 'pitch':
+                            this.synth.Oscillators[1].pitchComponent = new _dragInput2.default(element);
+                            break;
+                        case 'voices':
+                            this.synth.Oscillators[1].voicesComponent = new _dragInput2.default(element);
+                            break;
+                    }
+                }
+            }.bind(this));
+        }
+    }, {
+        key: 'setupSelect',
+        value: function setupSelect() {
+            var selects = document.querySelectorAll('select.waveformSelect');
+            selects.forEach(function (element) {
+                if (element.dataset.componentparent === 'osc[0]') {
+                    this.synth.Oscillators[0].waveformComponent = element;
+                }
+                if (element.dataset.componentparent === 'osc[1]') {
+                    this.synth.Oscillators[1].waveformComponent = element;
+                }
             }.bind(this));
         }
     }]);
@@ -239,7 +401,7 @@ var UI = function () {
 
 exports.default = UI;
 
-},{"./knob":6}],5:[function(require,module,exports){
+},{"./dragInput":6,"./knob":7}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -257,6 +419,76 @@ var UI_Component_Base = function UI_Component_Base(element) {
 exports.default = UI_Component_Base;
 
 },{}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = require('./base');
+
+var _base2 = _interopRequireDefault(_base);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var dragInput = function (_UI_Component_Base) {
+    _inherits(dragInput, _UI_Component_Base);
+
+    function dragInput(element) {
+        _classCallCheck(this, dragInput);
+
+        var _this = _possibleConstructorReturn(this, (dragInput.__proto__ || Object.getPrototypeOf(dragInput)).call(this, element));
+
+        _this.value = parseInt(element.getAttribute('value'));
+        _this.previousValue = 0;
+        _this.minVal = parseInt(element.getAttribute('data-minVal'));
+        _this.maxVal = parseInt(element.getAttribute('data-maxVal'));
+
+        _this.element.onmousedown = function () {
+            this.previousValue = this.value;
+            this.updateValue();
+        }.bind(_this);
+
+        _this.setStyle();
+        return _this;
+    }
+
+    _createClass(dragInput, [{
+        key: 'updateValue',
+        value: function updateValue() {
+            document.body.onmousemove = function (event) {
+
+                var elementOffset = this.element.getBoundingClientRect();
+                var elementCenter = elementOffset.top + elementOffset.height / 2;
+                var cursorRelativeToCenter = (elementCenter - event.clientY) / 15;
+
+                var rounded = Math.round(this.previousValue + cursorRelativeToCenter);
+                if (rounded >= this.minVal && rounded <= this.maxVal) this.value = rounded;
+
+                this.setStyle();
+            }.bind(this);
+        }
+    }, {
+        key: 'setStyle',
+        value: function setStyle() {
+            this.element.value = this.value;
+        }
+    }]);
+
+    return dragInput;
+}(_base2.default);
+
+exports.default = dragInput;
+
+},{"./base":5}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

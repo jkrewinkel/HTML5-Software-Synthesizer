@@ -7,6 +7,10 @@
   justify-content: center;
   align-items: center;
 
+  label{
+    position:absolute;
+  }
+
   svg{
     position:absolute;
     top: -2px;
@@ -27,8 +31,8 @@
     overflow: visible;
     border: none;
     padding: 0;
-    cursor: pointer;
     position: relative;
+    cursor:n-resize;
 
     &::-moz-focus-inner {
       // removes padding in Firefox

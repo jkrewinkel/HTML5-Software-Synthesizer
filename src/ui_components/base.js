@@ -3,6 +3,7 @@ class UI_Component_Base{
         this.element = element;
 
     }
+
 }
 
 export default UI_Component_Base;

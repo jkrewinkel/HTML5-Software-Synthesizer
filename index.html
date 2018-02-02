@@ -28,12 +28,81 @@
     <!-- Synth -->
     <main role="main">
 
-        <!--
-        <div class="knob-container">
-            <button class="knob" data-component="knob" data-componentParent="osc[0]" data-value="0">
-                <br />
-            </button>
-        </div>-->
+        <!-- Oscillator 1 -->
+        <section id="osc1">
+            <div class="select-container">
+                <label>Waveform</label>
+                <select data-componentParent="osc[0]" class="waveformSelect">
+                    <option selected="selected">sine</option>
+                    <option>square</option>
+                    <option>sawtooth</option>
+                    <option>triangle</option>
+                </select>
+            </div>
+
+            <div class="dragInput-container">
+                <label>Pitch</label>
+                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[0]" data-componentControl="pitch" value="0" data-minVal="-12" data-maxVal="12" />
+            </div>
+
+            <div class="dragInput-container">
+                <label>Voices</label>
+                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[0]"  data-componentControl="voices" value="1" data-minVal="1" data-maxVal="10" />
+            </div>
+
+            <div class="knob-container">
+                <label>Detune</label>
+                <button class="knob" data-component="knob" data-componentParent="osc[0]" data-value="0" data-componentControl="detune">
+                    <br />
+                </button>
+            </div>
+
+            <div class="knob-container">
+                <label>Level</label>
+                <button class="knob" data-component="knob" data-componentParent="osc[0]" data-componentControl="level" data-value="0">
+                    <br />
+                </button>
+            </div>
+        </section>
+        <!-- End of Oscillator 1 -->
+
+        <!-- Oscillator 2 -->
+        <section id="osc2">
+            <div class="select-container">
+                <label>Waveform</label>
+                <select data-componentParent="osc[1]" class="waveformSelect">
+                    <option selected="selected">sine</option>
+                    <option>square</option>
+                    <option>sawtooth</option>
+                    <option>triangle</option>
+                </select>
+            </div>
+
+            <div class="dragInput-container">
+                <label>Pitch</label>
+                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[1]" data-componentControl="pitch" value="0" data-minVal="-12" data-maxVal="12" />
+            </div>
+
+            <div class="dragInput-container">
+                <label>Voices</label>
+                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[1]"  data-componentControl="voices" value="1" data-minVal="1" data-maxVal="10" />
+            </div>
+
+            <div class="knob-container">
+                <label>Detune</label>
+                <button class="knob" data-component="knob" data-componentParent="osc[1]" data-value="0" data-componentControl="detune">
+                    <br />
+                </button>
+            </div>
+
+            <div class="knob-container">
+                <label>Level</label>
+                <button class="knob" data-component="knob" data-componentParent="osc[1]" data-componentControl="level" data-value="0">
+                    <br />
+                </button>
+            </div>
+        </section>
+        <!-- End of Oscillator 2 -->
 
         <!-- Keyboard -->
         <section id="input">
