@@ -94,6 +94,10 @@ var _oscillator = require("./synth_components/oscillator");
 
 var _oscillator2 = _interopRequireDefault(_oscillator);
 
+var _adsr = require("./synth_components/adsr");
+
+var _adsr2 = _interopRequireDefault(_adsr);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -104,6 +108,7 @@ var Synth = function () {
 
         this.context = context;
         this.oscillators = [new _oscillator2.default(context), new _oscillator2.default(context)];
+        this.adsr = new _adsr2.default(context);
     }
 
     _createClass(Synth, [{
@@ -117,15 +122,84 @@ var Synth = function () {
         key: "start",
         value: function start() {
             this.oscillators.forEach(function (osc) {
-                osc.start();
+
+                var oscLevel = osc.getLevel();
+                osc.create();
+
+                var attack = this.adsr.attack / 200;
+                var decay = this.adsr.decay / 100;
+
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = osc.oscillators[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var oscillator = _step.value;
+
+
+                        // Starts at 0, ramps up to oscLevel over the time of the attackControl value
+                        oscillator['gain'].gain.setValueAtTime(0.001, this.context.currentTime);
+
+                        var sustain = this.adsr.getSustain();
+                        sustain = oscLevel * sustain / osc.oscillators.length;
+                        if (sustain < 0.002) sustain = 0.001;
+
+                        oscillator['gain'].gain.exponentialRampToValueAtTime(oscLevel, this.context.currentTime + attack);
+                        oscillator['gain'].gain.exponentialRampToValueAtTime(sustain, this.context.currentTime + attack + decay);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }.bind(this));
+
+            // Play the oscillators
+            this.oscillators.forEach(function (osc) {
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = osc.oscillators[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var oscillator = _step2.value;
+
+                        oscillator['osc'].start();
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
             });
         }
     }, {
         key: "stop",
         value: function stop() {
+            var release = this.adsr.release / 200;
+
             this.oscillators.forEach(function (osc) {
-                osc.stop();
-            });
+                osc.stop(this.context.currentTime + release, this.adsr.sustain);
+            }.bind(this));
         }
     }, {
         key: "setupUI",
@@ -144,7 +218,68 @@ var Synth = function () {
 
 exports.default = Synth;
 
-},{"./synth_components/oscillator":3,"./ui_components/UI.js":4}],3:[function(require,module,exports){
+},{"./synth_components/adsr":3,"./synth_components/oscillator":4,"./ui_components/UI.js":5}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ADSR = function () {
+    function ADSR(context) {
+        _classCallCheck(this, ADSR);
+
+        this.context = context;
+    }
+
+    _createClass(ADSR, [{
+        key: "setValues",
+        value: function setValues() {
+            this.attack = parseInt(this.attackControl.value);
+            this.decay = parseInt(this.decayControl.value);
+            this.sustain = parseInt(this.sustainControl.value);
+            this.release = parseInt(this.releaseControl.value);
+        }
+    }, {
+        key: "getSustain",
+        value: function getSustain() {
+            var sustainVal = this.sustain * 100 / 250 / 100;
+            if (sustainVal > 0) {
+                if (sustainVal > 1) return 1;else return sustainVal;
+            } else return 0.001;
+        }
+    }, {
+        key: "attackComponent",
+        set: function set(component) {
+            this.attackControl = component;
+        }
+    }, {
+        key: "decayComponent",
+        set: function set(component) {
+            this.decayControl = component;
+        }
+    }, {
+        key: "sustainComponent",
+        set: function set(component) {
+            this.sustainControl = component;
+        }
+    }, {
+        key: "releaseComponent",
+        set: function set(component) {
+            this.releaseControl = component;
+        }
+    }]);
+
+    return ADSR;
+}();
+
+exports.default = ADSR;
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -168,8 +303,14 @@ var Oscillator = function () {
             this.frequency = 440 * Math.pow(Math.pow(2, 1 / 12), halfStep + this.pitchControl.value);
         }
     }, {
-        key: 'start',
-        value: function start() {
+        key: 'getLevel',
+        value: function getLevel() {
+            var oscLevel = (this.gainControl.value - this.gainControl.minVal) * 100 / (this.gainControl.maxVal - this.gainControl.minVal) / 100 / this.voicesControl.value;
+            if (oscLevel > 0) return oscLevel;else return 0.001;
+        }
+    }, {
+        key: 'create',
+        value: function create() {
 
             this.oscillators = [];
 
@@ -181,11 +322,7 @@ var Oscillator = function () {
                 // Create the gain node
                 this.oscillators[i]['gain'] = this.context.createGain();
                 this.oscillators[i]['gain'].connect(this.context.destination);
-                console.log(this.voicesControl.value);
 
-                this.oscillators[i]['gain'].gain.value = (this.gainControl.value - this.gainControl.minVal) * 100 / (this.gainControl.maxVal - this.gainControl.minVal) / 100 / this.voicesControl.value;
-
-                console.log(this.oscillators[i]['gain'].gain);
                 // Create the oscillator
                 this.oscillators[i]['osc'] = this.context.createOscillator();
                 this.oscillators[i]['osc'].connect(this.oscillators[i]['gain']);
@@ -201,58 +338,33 @@ var Oscillator = function () {
                     osc['osc'].frequency.value = this.frequency - oscBreadth / 2 + index * detune;
                 }.bind(this));
             }
-
-            // Play the oscillators
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = this.oscillators[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var osc = _step.value;
-
-                    osc['osc'].start();
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
         }
     }, {
         key: 'stop',
-        value: function stop() {
+        value: function stop(when, sustain) {
             if (this.oscillators !== undefined) {
-                var _iteratorNormalCompletion2 = true;
-                var _didIteratorError2 = false;
-                var _iteratorError2 = undefined;
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
 
                 try {
-                    for (var _iterator2 = this.oscillators[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                        var osc = _step2.value;
+                    for (var _iterator = this.oscillators[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var osc = _step.value;
 
-                        osc['osc'].stop();
+                        osc['gain'].gain.exponentialRampToValueAtTime(0.01, when);
+                        osc['osc'].stop(when);
                     }
                 } catch (err) {
-                    _didIteratorError2 = true;
-                    _iteratorError2 = err;
+                    _didIteratorError = true;
+                    _iteratorError = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                            _iterator2.return();
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
                         }
                     } finally {
-                        if (_didIteratorError2) {
-                            throw _iteratorError2;
+                        if (_didIteratorError) {
+                            throw _iteratorError;
                         }
                     }
                 }
@@ -290,8 +402,8 @@ var Oscillator = function () {
 
 exports.default = Oscillator;
 
-},{}],4:[function(require,module,exports){
-'use strict';
+},{}],5:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -299,13 +411,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _knob = require('./knob');
+var _knob = require("./knob");
 
 var _knob2 = _interopRequireDefault(_knob);
 
-var _dragInput = require('./dragInput');
+var _dragInput = require("./dragInput");
 
 var _dragInput2 = _interopRequireDefault(_dragInput);
+
+var _adsr = require("./../ui_components/adsr");
+
+var _adsr2 = _interopRequireDefault(_adsr);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -321,6 +437,8 @@ var UI = function () {
         this.setupDragInput();
         this.setupSelect();
 
+        this.setupADSR_Graphic();
+
         // Mouse up always disables any mousemove event handlers
         document.addEventListener('mouseup', function () {
             document.body.onmousemove = '';
@@ -328,7 +446,7 @@ var UI = function () {
     }
 
     _createClass(UI, [{
-        key: 'setupKnobs',
+        key: "setupKnobs",
         value: function setupKnobs() {
             var knobElements = document.querySelectorAll('[data-component="knob"]');
             knobElements.forEach(function (element) {
@@ -352,10 +470,27 @@ var UI = function () {
                             break;
                     }
                 }
+                if (element.dataset.componentparent === 'adsr') {
+                    switch (element.dataset.componentcontrol) {
+                        case 'attack':
+                            this.synth.adsr.attackComponent = new _knob2.default(element);
+                            break;
+                        case 'decay':
+                            this.synth.adsr.decayComponent = new _knob2.default(element);
+                            break;
+                        case 'sustain':
+                            this.synth.adsr.sustainComponent = new _knob2.default(element);
+                            break;
+                        case 'release':
+                            this.synth.adsr.releaseComponent = new _knob2.default(element);
+                            break;
+                    }
+                }
+                if (element.dataset.componentparent === 'filter') {}
             }.bind(this));
         }
     }, {
-        key: 'setupDragInput',
+        key: "setupDragInput",
         value: function setupDragInput() {
             var dragInputElements = document.querySelectorAll('[data-component="dragInput"]');
             dragInputElements.forEach(function (element) {
@@ -382,7 +517,7 @@ var UI = function () {
             }.bind(this));
         }
     }, {
-        key: 'setupSelect',
+        key: "setupSelect",
         value: function setupSelect() {
             var selects = document.querySelectorAll('select.waveformSelect');
             selects.forEach(function (element) {
@@ -394,6 +529,13 @@ var UI = function () {
                 }
             }.bind(this));
         }
+    }, {
+        key: "setupADSR_Graphic",
+        value: function setupADSR_Graphic() {
+            this.adsr_graphic = new _adsr2.default(this.synth.adsr, document.querySelector('svg#adsrGraphic'));
+            this.synth.adsr.setValues();
+            this.adsr_graphic.updateGraphic();
+        }
     }]);
 
     return UI;
@@ -401,7 +543,84 @@ var UI = function () {
 
 exports.default = UI;
 
-},{"./dragInput":6,"./knob":7}],5:[function(require,module,exports){
+},{"./../ui_components/adsr":6,"./dragInput":8,"./knob":9}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ADSR_Graphic = function () {
+    function ADSR_Graphic(component, graphic) {
+        _classCallCheck(this, ADSR_Graphic);
+
+        this.synthComponent = component;
+        this.graphic = graphic;
+
+        var graphicSize = graphic.getBoundingClientRect();
+        this.height = graphicSize.height;
+        this.width = graphicSize.width;
+
+        this.path = graphic.querySelector('path');
+
+        this.synthComponent.attackControl.afterUpdate = function () {
+            this.updateGraphic();
+        }.bind(this);
+        this.synthComponent.decayControl.afterUpdate = function () {
+            this.updateGraphic();
+        }.bind(this);
+        this.synthComponent.sustainControl.afterUpdate = function () {
+            this.updateGraphic();
+        }.bind(this);
+        this.synthComponent.releaseControl.afterUpdate = function () {
+            this.updateGraphic();
+        }.bind(this);
+    }
+
+    _createClass(ADSR_Graphic, [{
+        key: 'updateGraphic',
+        value: function updateGraphic() {
+
+            this.synthComponent.setValues();
+
+            var draw = '';
+
+            var attack = this.synthComponent.attackControl.value * 1.25;
+            var decay = this.synthComponent.decayControl.value * 1.25;
+            var sustain = this.synthComponent.sustainControl.value * 100 / 250 / 100;
+            sustain = this.height - sustain * this.height;
+            if (sustain < 2) sustain = 1;else if (sustain > this.height - 1) sustain = this.height - 1;
+            var release = this.synthComponent.releaseControl.value;
+
+            draw += 'M1,' + this.height + ' ';
+
+            // Attack (starts from lower left corner)
+            if (attack < 1) draw += 'L1,1';else draw += 'Q1,1 ' + attack + ',1';
+
+            // Decay (starts where attack ends with a curve downwards towards the sustain level)
+            if (decay < 1) draw += 'L' + attack + ',' + sustain;else draw += 'Q' + attack + ',' + sustain + ' ' + (decay + attack) + ',' + sustain;
+
+            // Sustain
+            draw += 'L' + 700 + ',' + sustain;
+
+            // Release
+            draw += 'Q' + 700 + ',' + (this.height - 1) + ' ' + (700 + release) + ',' + (this.height - 1);
+
+            // Add to svg
+            this.path.setAttribute('d', draw);
+        }
+    }]);
+
+    return ADSR_Graphic;
+}();
+
+exports.default = ADSR_Graphic;
+
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -418,7 +637,7 @@ var UI_Component_Base = function UI_Component_Base(element) {
 
 exports.default = UI_Component_Base;
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -488,7 +707,7 @@ var dragInput = function (_UI_Component_Base) {
 
 exports.default = dragInput;
 
-},{"./base":5}],7:[function(require,module,exports){
+},{"./base":7}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -517,11 +736,11 @@ var Knob = function (_UI_Component_Base) {
 
                 var _this = _possibleConstructorReturn(this, (Knob.__proto__ || Object.getPrototypeOf(Knob)).call(this, element));
 
-                _this.element.dataset.value = '0';
+                _this._afterUpdate = null;
 
                 _this.minVal = 0;
                 _this.maxVal = 250;
-                _this.value = 0;
+                _this.value = parseInt(_this.element.dataset.value);
                 _this.lastCursorPosition = 0;
 
                 _this.dial = _this.createDial();
@@ -556,13 +775,11 @@ var Knob = function (_UI_Component_Base) {
                         circle.setAttribute('stroke-width', '1');
 
                         var circumference = 2 * Math.PI * radius;
-                        //circle.setAttribute('data-endpoint', (circumference*0.33).toString() );
 
                         circle.startPoint = circumference;
                         circle.endPoint = circumference * 0.33;
 
                         circumference = circumference.toString();
-                        //circle.setAttribute('data-startpoint', circumference);
                         circle.setAttribute('stroke-dasharray', circumference + ' ' + circumference);
                         circle.setAttribute('stroke-dashoffset', (radius * 0.33).toString());
 
@@ -590,6 +807,8 @@ var Knob = function (_UI_Component_Base) {
 
                         // Set percentage of dial
                         this.dial.setAttribute('stroke-dashoffset', (this.dial.endPoint - dialVal).toString());
+
+                        if (this._afterUpdate) this._afterUpdate();
                 }
         }, {
                 key: 'updateValue',
@@ -598,20 +817,25 @@ var Knob = function (_UI_Component_Base) {
 
                                 var elementOffset = this.element.getBoundingClientRect();
                                 var elementCenter = elementOffset.top + elementOffset.height / 2;
-                                var cursorRelativeToCenter = (elementCenter - event.clientY) / 150;
+                                var cursorRelativeToCenter = (elementCenter - event.clientY) / 20;
 
                                 if (cursorRelativeToCenter > 0) {
 
-                                        if (this.lastCursorPosition < cursorRelativeToCenter && this.value < this.maxVal) this.value = this.value + cursorRelativeToCenter;else if (this.value > this.minVal) this.value = this.value - cursorRelativeToCenter;
+                                        if (this.lastCursorPosition < cursorRelativeToCenter && this.value <= this.maxVal) this.value = this.value + cursorRelativeToCenter;else if (this.value >= this.minVal) this.value = this.value - cursorRelativeToCenter;
                                 } else {
 
-                                        if (this.lastCursorPosition > cursorRelativeToCenter && this.value > this.minVal) this.value = this.value + cursorRelativeToCenter;else if (this.value < this.maxVal) this.value = this.value - cursorRelativeToCenter;
+                                        if (this.lastCursorPosition > cursorRelativeToCenter && this.value >= this.minVal) this.value = this.value + cursorRelativeToCenter;else if (this.value <= this.maxVal) this.value = this.value - cursorRelativeToCenter;
                                 }
 
                                 this.lastCursorPosition = cursorRelativeToCenter;
 
                                 this.setStyle();
                         }.bind(this);
+                }
+        }, {
+                key: 'afterUpdate',
+                set: function set(event) {
+                        this._afterUpdate = event;
                 }
         }]);
 
@@ -620,6 +844,6 @@ var Knob = function (_UI_Component_Base) {
 
 exports.default = Knob;
 
-},{"./base":5}]},{},[1])
+},{"./base":7}]},{},[1])
 
 //# sourceMappingURL=build.js.map

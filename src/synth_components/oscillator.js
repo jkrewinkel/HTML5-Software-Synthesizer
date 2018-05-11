@@ -5,7 +5,12 @@ class Oscillator{
     setFrequency(halfStep){
         this.frequency = 440 * ( Math.pow( Math.pow(2, 1/12), (halfStep + this.pitchControl.value)) );
     }
-    start(){
+    getLevel(){
+        let oscLevel = ((((this.gainControl.value - this.gainControl.minVal) * 100) / (this.gainControl.maxVal - this.gainControl.minVal )/ 100) / this.voicesControl.value);
+        if( oscLevel > 0 ) return oscLevel
+        else return 0.001;
+    }
+    create(){
 
         this.oscillators = [];
 
@@ -17,11 +22,7 @@ class Oscillator{
             // Create the gain node
             this.oscillators[i]['gain'] = this.context.createGain();
             this.oscillators[i]['gain'].connect(this.context.destination);
-            console.log(this.voicesControl.value);
 
-            this.oscillators[i]['gain'].gain.value = ((((this.gainControl.value - this.gainControl.minVal) * 100) / (this.gainControl.maxVal - this.gainControl.minVal )/ 100) / this.voicesControl.value);
-
-            console.log(this.oscillators[i]['gain'].gain);
             // Create the oscillator
             this.oscillators[i]['osc'] = this.context.createOscillator();
             this.oscillators[i]['osc'].connect(this.oscillators[i]['gain']);
@@ -39,16 +40,12 @@ class Oscillator{
             }.bind(this));
         }
 
-        // Play the oscillators
-        for( let osc of this.oscillators ){
-            osc['osc'].start();
-        }
-
     }
-    stop(){
+    stop(when, sustain){
         if(this.oscillators !== undefined ){
             for( let osc of this.oscillators ){
-                osc['osc'].stop();
+                osc['gain'].gain.exponentialRampToValueAtTime(0.01, when);
+                osc['osc'].stop(when);
             }
         }
     }

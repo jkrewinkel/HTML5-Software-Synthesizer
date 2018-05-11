@@ -1,5 +1,6 @@
 import Knob from "./knob";
 import dragInput from './dragInput';
+import ADSR_Graphic from "./../ui_components/adsr";
 
 class UI{
     constructor(synth){
@@ -8,6 +9,8 @@ class UI{
         this.setupKnobs();
         this.setupDragInput();
         this.setupSelect();
+
+        this.setupADSR_Graphic();
 
         // Mouse up always disables any mousemove event handlers
         document.addEventListener('mouseup', function(){
@@ -37,6 +40,25 @@ class UI{
                         this.synth.Oscillators[1].detuneComponent = new Knob(element);
                         break;
                 }
+            }
+            if( element.dataset.componentparent === 'adsr' ){
+                switch( element.dataset.componentcontrol ){
+                    case 'attack':
+                        this.synth.adsr.attackComponent = new Knob(element);
+                        break;
+                    case 'decay':
+                        this.synth.adsr.decayComponent = new Knob(element);
+                        break;
+                    case 'sustain':
+                        this.synth.adsr.sustainComponent = new Knob(element);
+                        break;
+                    case 'release':
+                        this.synth.adsr.releaseComponent = new Knob(element);
+                        break;
+                }
+            }
+            if( element.dataset.componentparent === 'filter' ){
+
             }
         }.bind(this));
 
@@ -78,6 +100,12 @@ class UI{
                 this.synth.Oscillators[1].waveformComponent = element;
             }
         }.bind(this));
+    }
+
+    setupADSR_Graphic(){
+        this.adsr_graphic = new ADSR_Graphic(this.synth.adsr, document.querySelector('svg#adsrGraphic'));
+        this.synth.adsr.setValues();
+        this.adsr_graphic.updateGraphic();
     }
 }
 

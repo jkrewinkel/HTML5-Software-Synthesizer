@@ -1,0 +1,13 @@
+section#oscillators,
+section#adsr{
+
+  display:flex;
+
+  & > div{
+    display:flex;
+  }
+
+}
+section#adsr{
+  flex-direction:column;
+}

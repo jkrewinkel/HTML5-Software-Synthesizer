@@ -5,11 +5,11 @@ class Knob extends UI_Component_Base{
     constructor(element){
         super(element);
 
-        this.element.dataset.value = '0';
+        this._afterUpdate = null;
 
         this.minVal = 0;
         this.maxVal = 250;
-        this.value = 0;
+        this.value = parseInt(this.element.dataset.value);
         this.lastCursorPosition = 0;
 
         this.dial = this.createDial();
@@ -19,6 +19,10 @@ class Knob extends UI_Component_Base{
         this.element.onmousedown = function(){
             this.updateValue();
         }.bind(this);
+    }
+
+    set afterUpdate(event){
+        this._afterUpdate = event;
     }
 
     createDial(){
@@ -41,13 +45,11 @@ class Knob extends UI_Component_Base{
         circle.setAttribute('stroke-width', '1');
 
         let circumference = (2 * Math.PI * radius);
-        //circle.setAttribute('data-endpoint', (circumference*0.33).toString() );
 
         circle.startPoint = circumference;
         circle.endPoint = (circumference*0.33);
 
         circumference = circumference.toString();
-        //circle.setAttribute('data-startpoint', circumference);
         circle.setAttribute('stroke-dasharray', circumference + ' ' + circumference);
         circle.setAttribute('stroke-dashoffset', (radius*0.33).toString());
 
@@ -75,6 +77,10 @@ class Knob extends UI_Component_Base{
 
         // Set percentage of dial
         this.dial.setAttribute('stroke-dashoffset', (this.dial.endPoint - dialVal).toString() );
+
+        if( this._afterUpdate )
+            this._afterUpdate();
+
     }
 
     updateValue(){
@@ -82,22 +88,22 @@ class Knob extends UI_Component_Base{
 
             let elementOffset = this.element.getBoundingClientRect();
             let elementCenter = elementOffset.top + (elementOffset.height / 2);
-            let cursorRelativeToCenter = (elementCenter - event.clientY) / 150;
+            let cursorRelativeToCenter = (elementCenter - event.clientY) / 20;
 
             if (cursorRelativeToCenter > 0 ) {
 
                 if ((this.lastCursorPosition < cursorRelativeToCenter) &&
-                    (this.value < this.maxVal))
+                    (this.value <= this.maxVal))
                     this.value = this.value + cursorRelativeToCenter;
-                else if (this.value > this.minVal)
+                else if (this.value >= this.minVal)
                     this.value = this.value - cursorRelativeToCenter;
 
             } else {
 
                 if ((this.lastCursorPosition > cursorRelativeToCenter) &&
-                    (this.value > this.minVal))
+                    (this.value >= this.minVal))
                     this.value = this.value + cursorRelativeToCenter;
-                else if (this.value < this.maxVal)
+                else if (this.value <= this.maxVal)
                     this.value = this.value - cursorRelativeToCenter;
 
             }

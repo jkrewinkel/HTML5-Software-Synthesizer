@@ -12,6 +12,7 @@
     "browserify": "^15.2.0",
     "gulp-babel": "^7.0.1",
     "gulp-sourcemaps": "^2.6.4",
+    "npm": "^5.8.0",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.10.0"

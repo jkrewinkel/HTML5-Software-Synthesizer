@@ -192,6 +192,16 @@
 .icon-volume-decrease:before {
   content: "\ea2c"; }
 
+section#oscillators,
+section#adsr {
+  display: flex; }
+  section#oscillators > div,
+  section#adsr > div {
+    display: flex; }
+
+section#adsr {
+  flex-direction: column; }
+
 .knob-container {
   position: relative;
   width: 56px;
@@ -201,7 +211,8 @@
   justify-content: center;
   align-items: center; }
   .knob-container label {
-    position: absolute; }
+    position: absolute;
+    bottom: -20px; }
   .knob-container svg {
     position: absolute;
     top: -2px;

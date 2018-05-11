@@ -27,82 +27,125 @@
 
     <!-- Synth -->
     <main role="main">
+        <section id="oscillators">
 
-        <!-- Oscillator 1 -->
-        <section id="osc1">
-            <div class="select-container">
-                <label>Waveform</label>
-                <select data-componentParent="osc[0]" class="waveformSelect">
-                    <option selected="selected">sine</option>
-                    <option>square</option>
-                    <option>sawtooth</option>
-                    <option>triangle</option>
-                </select>
+            <!-- Oscillator 1 -->
+            <div id="osc1">
+                <div class="select-container">
+                    <label>Waveform</label>
+                    <select data-componentParent="osc[0]" class="waveformSelect">
+                        <option selected="selected">sine</option>
+                        <option>square</option>
+                        <option>sawtooth</option>
+                        <option>triangle</option>
+                    </select>
+                </div>
+
+                <div class="dragInput-container">
+                    <label>Pitch</label>
+                    <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[0]" data-componentControl="pitch" value="0" data-minVal="-12" data-maxVal="12" />
+                </div>
+
+                <div class="dragInput-container">
+                    <label>Voices</label>
+                    <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[0]"  data-componentControl="voices" value="1" data-minVal="1" data-maxVal="10" />
+                </div>
+
+                <div class="knob-container">
+                    <label>Detune</label>
+                    <button class="knob" data-component="knob" data-componentParent="osc[0]" data-value="0" data-componentControl="detune">
+                        <br />
+                    </button>
+                </div>
+
+                <div class="knob-container">
+                    <label>Level</label>
+                    <button class="knob" data-component="knob" data-componentParent="osc[0]" data-componentControl="level" data-value="250">
+                        <br />
+                    </button>
+                </div>
             </div>
+            <!-- End of Oscillator 1 -->
 
-            <div class="dragInput-container">
-                <label>Pitch</label>
-                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[0]" data-componentControl="pitch" value="0" data-minVal="-12" data-maxVal="12" />
+            <!-- Oscillator 2 -->
+            <div id="osc2">
+                <div class="select-container">
+                    <label>Waveform</label>
+                    <select data-componentParent="osc[1]" class="waveformSelect">
+                        <option selected="selected">sine</option>
+                        <option>square</option>
+                        <option>sawtooth</option>
+                        <option>triangle</option>
+                    </select>
+                </div>
+
+                <div class="dragInput-container">
+                    <label>Pitch</label>
+                    <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[1]" data-componentControl="pitch" value="0" data-minVal="-12" data-maxVal="12" />
+                </div>
+
+                <div class="dragInput-container">
+                    <label>Voices</label>
+                    <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[1]"  data-componentControl="voices" value="1" data-minVal="1" data-maxVal="10" />
+                </div>
+
+                <div class="knob-container">
+                    <label>Detune</label>
+                    <button class="knob" data-component="knob" data-componentParent="osc[1]" data-value="0" data-componentControl="detune">
+                        <br />
+                    </button>
+                </div>
+
+                <div class="knob-container">
+                    <label>Level</label>
+                    <button class="knob" data-component="knob" data-componentParent="osc[1]" data-componentControl="level" data-value="0">
+                        <br />
+                    </button>
+                </div>
             </div>
+            <!-- End of Oscillator 2 -->
 
-            <div class="dragInput-container">
-                <label>Voices</label>
-                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[0]"  data-componentControl="voices" value="1" data-minVal="1" data-maxVal="10" />
-            </div>
+        </section>
+        <!-- End of Oscillators -->
 
-            <div class="knob-container">
-                <label>Detune</label>
-                <button class="knob" data-component="knob" data-componentParent="osc[0]" data-value="0" data-componentControl="detune">
-                    <br />
-                </button>
-            </div>
+        <!-- ADSR -->
+        <section id="adsr">
+            <svg id="adsrGraphic" height="200" width="100%" shape-rendering="geometricPrecision">
+                <path stroke="#000" stroke-width="2" fill="none"></path>
+            </svg>
+            <div id="adsrControls">
 
-            <div class="knob-container">
-                <label>Level</label>
-                <button class="knob" data-component="knob" data-componentParent="osc[0]" data-componentControl="level" data-value="0">
-                    <br />
-                </button>
+                <div class="knob-container">
+                    <label>Attack</label>
+                    <button class="knob" data-component="knob" data-componentParent="adsr" data-componentControl="attack" data-value="100">
+                        <br />
+                    </button>
+                </div>
+
+                <div class="knob-container">
+                    <label>Decay</label>
+                    <button class="knob" data-component="knob" data-componentParent="adsr" data-componentControl="decay" data-value="50">
+                        <br />
+                    </button>
+                </div>
+
+                <div class="knob-container">
+                    <label>Sustain</label>
+                    <button class="knob" data-component="knob" data-componentParent="adsr" data-componentControl="sustain" data-value="125">
+                        <br />
+                    </button>
+                </div>
+
+                <div class="knob-container">
+                    <label>Release</label>
+                    <button class="knob" data-component="knob" data-componentParent="adsr" data-componentControl="release" data-value="125">
+                        <br />
+                    </button>
+                </div>
+
             </div>
         </section>
-        <!-- End of Oscillator 1 -->
-
-        <!-- Oscillator 2 -->
-        <section id="osc2">
-            <div class="select-container">
-                <label>Waveform</label>
-                <select data-componentParent="osc[1]" class="waveformSelect">
-                    <option selected="selected">sine</option>
-                    <option>square</option>
-                    <option>sawtooth</option>
-                    <option>triangle</option>
-                </select>
-            </div>
-
-            <div class="dragInput-container">
-                <label>Pitch</label>
-                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[1]" data-componentControl="pitch" value="0" data-minVal="-12" data-maxVal="12" />
-            </div>
-
-            <div class="dragInput-container">
-                <label>Voices</label>
-                <input class="dragInput" type="text" data-component="dragInput" data-componentParent="osc[1]"  data-componentControl="voices" value="1" data-minVal="1" data-maxVal="10" />
-            </div>
-
-            <div class="knob-container">
-                <label>Detune</label>
-                <button class="knob" data-component="knob" data-componentParent="osc[1]" data-value="0" data-componentControl="detune">
-                    <br />
-                </button>
-            </div>
-
-            <div class="knob-container">
-                <label>Level</label>
-                <button class="knob" data-component="knob" data-componentParent="osc[1]" data-componentControl="level" data-value="0">
-                    <br />
-                </button>
-            </div>
-        </section>
-        <!-- End of Oscillator 2 -->
+        <!-- End of ADSR -->
 
         <!-- Keyboard -->
         <section id="input">
