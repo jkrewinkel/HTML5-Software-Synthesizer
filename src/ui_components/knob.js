@@ -10,6 +10,7 @@ class Knob extends UI_Component_Base{
         this.minVal = 0;
         this.maxVal = 250;
         this.value = parseInt(this.element.dataset.value);
+        this.percentage = ((this.value - this.minVal) * 100) / (this.maxVal - this.minVal);
         this.lastCursorPosition = 0;
 
         this.dial = this.createDial();
@@ -109,6 +110,7 @@ class Knob extends UI_Component_Base{
             }
 
             this.lastCursorPosition = cursorRelativeToCenter;
+            this.percentage = ((this.value - this.minVal) * 100) / (this.maxVal - this.minVal);
 
             this.setStyle();
 

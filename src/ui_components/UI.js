@@ -1,6 +1,7 @@
 import Knob from "./knob";
 import dragInput from './dragInput';
 import ADSR_Graphic from "./../ui_components/adsr";
+import Filter_Graphic from "./../ui_components/filter";
 
 class UI{
     constructor(synth){
@@ -11,6 +12,7 @@ class UI{
         this.setupSelect();
 
         this.setupADSR_Graphic();
+        this.setupFilter_Graphic();
 
         // Mouse up always disables any mousemove event handlers
         document.addEventListener('mouseup', function(){
@@ -58,7 +60,13 @@ class UI{
                 }
             }
             if( element.dataset.componentparent === 'filter' ){
-
+                switch( element.dataset.componentcontrol ){
+                    case 'cutoff':
+                        this.synth.filter.cutoffComponent = new Knob(element);
+                        break;
+                    case 'resonance':
+                        this.synth.filter.resonanceComponent = new Knob(element);
+                }
             }
         }.bind(this));
 
@@ -106,6 +114,12 @@ class UI{
         this.adsr_graphic = new ADSR_Graphic(this.synth.adsr, document.querySelector('svg#adsrGraphic'));
         this.synth.adsr.setValues();
         this.adsr_graphic.updateGraphic();
+    }
+
+    setupFilter_Graphic(){
+        this.filter_graphic = new Filter_Graphic(this.synth.filter, document.querySelector('svg#filterGraphic'));
+        this.synth.filter.setValues();
+        this.filter_graphic.updateGraphic();
     }
 }
 

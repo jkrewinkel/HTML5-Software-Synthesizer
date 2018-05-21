@@ -98,6 +98,10 @@ var _adsr = require("./synth_components/adsr");
 
 var _adsr2 = _interopRequireDefault(_adsr);
 
+var _filter = require("./synth_components/filter");
+
+var _filter2 = _interopRequireDefault(_filter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -109,6 +113,7 @@ var Synth = function () {
         this.context = context;
         this.oscillators = [new _oscillator2.default(context), new _oscillator2.default(context)];
         this.adsr = new _adsr2.default(context);
+        this.filter = new _filter2.default(context);
     }
 
     _createClass(Synth, [{
@@ -147,6 +152,10 @@ var Synth = function () {
 
                         oscillator['gain'].gain.exponentialRampToValueAtTime(oscLevel, this.context.currentTime + attack);
                         oscillator['gain'].gain.exponentialRampToValueAtTime(sustain, this.context.currentTime + attack + decay);
+
+                        // Set filter
+                        oscillator['filter'].type = this.filter.type;
+                        oscillator['filter'].frequency.value = 5000 * (this.filter.cutoffControl.percentage / 100);
                     }
                 } catch (err) {
                     _didIteratorError = true;
@@ -218,7 +227,7 @@ var Synth = function () {
 
 exports.default = Synth;
 
-},{"./synth_components/adsr":3,"./synth_components/oscillator":4,"./ui_components/UI.js":5}],3:[function(require,module,exports){
+},{"./synth_components/adsr":3,"./synth_components/filter":4,"./synth_components/oscillator":5,"./ui_components/UI.js":6}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -290,6 +299,49 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var Filter = function () {
+    function Filter(context) {
+        _classCallCheck(this, Filter);
+
+        this.context = context;
+        this.typeComponent = document.querySelector('.filterTypeSelect');
+    }
+
+    _createClass(Filter, [{
+        key: 'setValues',
+        value: function setValues() {
+            this.cutoff = parseInt(this.cutoffControl.value);
+            this.resonance = parseInt(this.resonanceControl.value);
+            this.type = this.typeComponent.options[this.typeComponent.selectedIndex].value;
+        }
+    }, {
+        key: 'cutoffComponent',
+        set: function set(component) {
+            this.cutoffControl = component;
+        }
+    }, {
+        key: 'resonanceComponent',
+        set: function set(component) {
+            this.resonanceControl = component;
+        }
+    }]);
+
+    return Filter;
+}();
+
+exports.default = Filter;
+
+},{}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var Oscillator = function () {
     function Oscillator(context) {
         _classCallCheck(this, Oscillator);
@@ -321,7 +373,11 @@ var Oscillator = function () {
 
                 // Create the gain node
                 this.oscillators[i]['gain'] = this.context.createGain();
-                this.oscillators[i]['gain'].connect(this.context.destination);
+                // Create the filter node
+                this.oscillators[i]['filter'] = this.context.createBiquadFilter();
+
+                this.oscillators[i]['gain'].connect(this.oscillators[i]['filter']);
+                this.oscillators[i]['filter'].connect(this.context.destination);
 
                 // Create the oscillator
                 this.oscillators[i]['osc'] = this.context.createOscillator();
@@ -402,7 +458,7 @@ var Oscillator = function () {
 
 exports.default = Oscillator;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -423,6 +479,10 @@ var _adsr = require("./../ui_components/adsr");
 
 var _adsr2 = _interopRequireDefault(_adsr);
 
+var _filter = require("./../ui_components/filter");
+
+var _filter2 = _interopRequireDefault(_filter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -438,6 +498,7 @@ var UI = function () {
         this.setupSelect();
 
         this.setupADSR_Graphic();
+        this.setupFilter_Graphic();
 
         // Mouse up always disables any mousemove event handlers
         document.addEventListener('mouseup', function () {
@@ -486,7 +547,15 @@ var UI = function () {
                             break;
                     }
                 }
-                if (element.dataset.componentparent === 'filter') {}
+                if (element.dataset.componentparent === 'filter') {
+                    switch (element.dataset.componentcontrol) {
+                        case 'cutoff':
+                            this.synth.filter.cutoffComponent = new _knob2.default(element);
+                            break;
+                        case 'resonance':
+                            this.synth.filter.resonanceComponent = new _knob2.default(element);
+                    }
+                }
             }.bind(this));
         }
     }, {
@@ -536,6 +605,13 @@ var UI = function () {
             this.synth.adsr.setValues();
             this.adsr_graphic.updateGraphic();
         }
+    }, {
+        key: "setupFilter_Graphic",
+        value: function setupFilter_Graphic() {
+            this.filter_graphic = new _filter2.default(this.synth.filter, document.querySelector('svg#filterGraphic'));
+            this.synth.filter.setValues();
+            this.filter_graphic.updateGraphic();
+        }
     }]);
 
     return UI;
@@ -543,7 +619,7 @@ var UI = function () {
 
 exports.default = UI;
 
-},{"./../ui_components/adsr":6,"./dragInput":8,"./knob":9}],6:[function(require,module,exports){
+},{"./../ui_components/adsr":7,"./../ui_components/filter":10,"./dragInput":9,"./knob":11}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -620,7 +696,7 @@ var ADSR_Graphic = function () {
 
 exports.default = ADSR_Graphic;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -637,7 +713,7 @@ var UI_Component_Base = function UI_Component_Base(element) {
 
 exports.default = UI_Component_Base;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -707,7 +783,75 @@ var dragInput = function (_UI_Component_Base) {
 
 exports.default = dragInput;
 
-},{"./base":7}],9:[function(require,module,exports){
+},{"./base":8}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+        value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Filter_Graphic = function () {
+        function Filter_Graphic(component, graphic) {
+                _classCallCheck(this, Filter_Graphic);
+
+                this.filterComponent = component;
+
+                var graphicSize = graphic.getBoundingClientRect();
+                this.height = graphicSize.height;
+                this.width = graphicSize.width;
+
+                this.path = graphic.querySelector('path');
+
+                this.filterComponent.cutoffControl.afterUpdate = function () {
+                        this.updateGraphic();
+                }.bind(this);
+                this.filterComponent.resonanceControl.afterUpdate = function () {
+                        this.updateGraphic();
+                }.bind(this);
+                this.filterComponent.typeComponent.onchange = function () {
+                        this.updateGraphic();
+                }.bind(this);
+        }
+
+        _createClass(Filter_Graphic, [{
+                key: 'updateGraphic',
+                value: function updateGraphic() {
+                        this.filterComponent.setValues();
+
+                        var cutoff = this.filterComponent.cutoff / 2;
+                        var q = -this.filterComponent.resonance + 200;
+                        var draw = void 0;
+
+                        if (this.filterComponent.type === 'highpass') {
+
+                                draw = 'M' + (cutoff + 10) + ' 210';
+
+                                draw = draw + 'C' + (cutoff + 40) + ',' + q + ' ' + (cutoff + 40) + ',100 ' + (cutoff + 100) + ',100';
+
+                                draw = draw + ' L' + (cutoff + 200) + ' 100';
+                        } else {
+
+                                draw = 'M' + (cutoff + 60) + ' 210';
+
+                                draw = draw + 'C' + (cutoff + 30) + ',' + q + ' ' + (cutoff + 30) + ',100 ' + (cutoff - 30) + ',100';
+
+                                draw = draw + ' L' + (-10 - cutoff) + ' 100';
+                        }
+
+                        this.path.setAttribute('d', draw);
+                }
+        }]);
+
+        return Filter_Graphic;
+}();
+
+exports.default = Filter_Graphic;
+
+},{}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -741,6 +885,7 @@ var Knob = function (_UI_Component_Base) {
                 _this.minVal = 0;
                 _this.maxVal = 250;
                 _this.value = parseInt(_this.element.dataset.value);
+                _this.percentage = (_this.value - _this.minVal) * 100 / (_this.maxVal - _this.minVal);
                 _this.lastCursorPosition = 0;
 
                 _this.dial = _this.createDial();
@@ -828,6 +973,7 @@ var Knob = function (_UI_Component_Base) {
                                 }
 
                                 this.lastCursorPosition = cursorRelativeToCenter;
+                                this.percentage = (this.value - this.minVal) * 100 / (this.maxVal - this.minVal);
 
                                 this.setStyle();
                         }.bind(this);
@@ -844,6 +990,6 @@ var Knob = function (_UI_Component_Base) {
 
 exports.default = Knob;
 
-},{"./base":7}]},{},[1])
+},{"./base":8}]},{},[1])
 
 //# sourceMappingURL=build.js.map

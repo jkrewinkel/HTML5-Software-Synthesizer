@@ -21,7 +21,11 @@ class Oscillator{
 
             // Create the gain node
             this.oscillators[i]['gain'] = this.context.createGain();
-            this.oscillators[i]['gain'].connect(this.context.destination);
+            // Create the filter node
+            this.oscillators[i]['filter'] = this.context.createBiquadFilter();
+
+            this.oscillators[i]['gain'].connect(this.oscillators[i]['filter']);
+            this.oscillators[i]['filter'].connect(this.context.destination);
 
             // Create the oscillator
             this.oscillators[i]['osc'] = this.context.createOscillator();

@@ -1,6 +1,7 @@
 import UI from "./ui_components/UI.js";
 import Oscillator from "./synth_components/oscillator";
 import ADSR from "./synth_components/adsr";
+import Filter from "./synth_components/filter";
 
 class Synth{
     constructor(context){
@@ -10,6 +11,7 @@ class Synth{
             new Oscillator(context),
         ];
         this.adsr = new ADSR(context);
+        this.filter = new Filter(context);
     }
 
     get Oscillators(){
@@ -42,6 +44,12 @@ class Synth{
 
                 oscillator['gain'].gain.exponentialRampToValueAtTime(oscLevel, this.context.currentTime + attack);
                 oscillator['gain'].gain.exponentialRampToValueAtTime(sustain, (this.context.currentTime + attack) + decay);
+
+                // Set filter
+                oscillator['filter'].type = this.filter.type;
+                oscillator['filter'].frequency.value = (5000 * (this.filter.cutoffControl.percentage / 100));
+                oscillator['filter'].q.value = 1000 * (this.filter.resonanceControl.percentage / 1000 );
+
             }
 
         }.bind(this));

@@ -147,6 +147,41 @@
         </section>
         <!-- End of ADSR -->
 
+        <!-- Filter -->
+        <section id="filter">
+
+            <svg id="filterGraphic" width="200" height="200" shape-rendering="geometricPrecision">
+                <path stroke="#000" stroke-width="2" fill="none"></path>
+            </svg>
+
+            <div id="filterControls">
+
+                <div class="select-container">
+                    <label>Type</label>
+                    <select data-componentParent="filter" class="filterTypeSelect">
+                        <option selected="selected">highpass</option>
+                        <option>lowpass</option>
+                    </select>
+                </div>
+
+                <div class="knob-container">
+                    <label>Cutoff</label>
+                    <button class="knob" data-component="knob" data-componentParent="filter" data-componentControl="cutoff" data-value="100">
+                        <br />
+                    </button>
+                </div>
+
+                <div class="knob-container">
+                    <label>Res</label>
+                    <button class="knob" data-component="knob" data-componentParent="filter" data-componentControl="resonance" data-value="100">
+                        <br />
+                    </button>
+                </div>
+
+            </div>
+        </section>
+        <!-- End of Filter -->
+
         <!-- Keyboard -->
         <section id="input">
             <div class="shadow"></div>
